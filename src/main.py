@@ -1,5 +1,7 @@
+import re
+
 # Funciones
-def dec_bin(numero, digitos):
+def dec_bin(numero, digitos=5):
     binario = "{0:b}".format(numero)
     longitud_actual = len(binario)
     if longitud_actual < digitos:
@@ -7,9 +9,12 @@ def dec_bin(numero, digitos):
     return binario
 
 
-def bin_hex(numero):
+def bin_hex(numero, digitos=8):
     hexa = hex(int(numero, 2))
     hexa = hexa[2:]
+    longitud_actual = len(hexa)
+    if longitud_actual < digitos:
+        hexa = (digitos - longitud_actual) * "0" + hexa
     return hexa
 
 
@@ -17,9 +22,9 @@ def parse_r(instruccion, operandos):
     print("ASM:", instruccion, ", ".join(operandos))
 
     instruccion_binaria = "0" * 6
-    instruccion_binaria += dec_bin(int(operandos[0]), digitos=5)
-    instruccion_binaria += dec_bin(int(operandos[1]), digitos=5)
-    instruccion_binaria += dec_bin(int(operandos[2]), digitos=5)
+    instruccion_binaria += dec_bin(int(operandos[0]))
+    instruccion_binaria += dec_bin(int(operandos[1]))
+    instruccion_binaria += dec_bin(int(operandos[2]))
     instruccion_binaria += "0" * 5
     instruccion_binaria += instrucciones_tipo_r[instruccion]
 
@@ -32,11 +37,30 @@ def parse_r(instruccion, operandos):
 
 
 def parse_i(instruccion, operandos):
-    pass
+    print("ASM:", instruccion, ", ".join(operandos))
 
+    if len(operandos) == 2:
+        #Quito los parentesis y lo pongo como un tercer argumento
+        operandos[1] = operandos[1].replace("(", " ")
+        operandos[1] = operandos[1].replace(")", "")
+        operandos.append(operandos[1].split()[1])
+        operandos[1] = operandos[1][0]
+
+    print("ASM2:", instruccion, ", ".join(operandos))
+
+    instruccion_binaria = instrucciones_tipo_i[instruccion]
+    instruccion_binaria += dec_bin(int(operandos[0]))
+    instruccion_binaria += dec_bin(int(operandos[1]))
+    instruccion_binaria += dec_bin(int(operandos[2]), digitos=16)
+
+    print("BIN:", instruccion_binaria)
+
+    instruccion_hexa = bin_hex(instruccion_binaria)
+    print("HEX:", instruccion_hexa)
 
 def parse_j(instruccion, operandos):
-    pass
+    print("ASM:", instruccion, ", ".join(operandos))
+    print(len(operandos))
 
 
 def eliminar_comentarios(linea):
@@ -106,17 +130,17 @@ def main():
     for linea in assembler:
         linea = linea.strip()
         linea = eliminar_comentarios(linea)
+        if len(linea) > 0:
+            instruccion, operandos = parse_instruccion(linea)
 
-        instruccion, operandos = parse_instruccion(linea)
+            if instruccion in instrucciones_tipo_i.keys():
+                parse_i(instruccion, operandos)
+            elif instruccion in instrucciones_tipo_j.keys():
+                parse_j(instruccion, operandos)
+            elif instruccion in instrucciones_tipo_r.keys():
+                parse_r(instruccion, operandos)
 
-        if instruccion in instrucciones_tipo_i.keys():
-            parse_i(instruccion, operandos)
-        elif instruccion in instrucciones_tipo_j.keys():
-            parse_j(instruccion, operandos)
-        elif instruccion in instrucciones_tipo_r.keys():
-            parse_r(instruccion, operandos)
-
-        print()
+            print()
 
 
 main()

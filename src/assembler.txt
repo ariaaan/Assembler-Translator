@@ -1,3 +1,6 @@
-LW 1, 0(20) ; Comentario
-XOR 2, 2, 2
-ADD 3, 1, 2
+LW 1, 0(20)         ;Load, instrucción tipo I
+XOR 2, 2, 2         ;Xor, instrucción tipo R
+ADD 3, 1, 2         ;Add, instrucción tipo
+
+;Pruebas mias (los inmediatos en decimal)
+XORI 3, 2, 25916    ;Xori, instrucción tipo I con inmediato sin parentesis
