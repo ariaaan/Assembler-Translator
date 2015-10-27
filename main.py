@@ -62,7 +62,7 @@ instrucciones_tipo_j = {
 
 
 #Logica
-test_file = open("test", "r")
+test_file = open("assembler.txt", "r")
 assembler = test_file.readlines()
 
 for line in assembler:
