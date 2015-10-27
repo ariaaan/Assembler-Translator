@@ -20,34 +20,84 @@ def bin_hex(numero, digitos=8):
 
 
 def parse_r(instruccion, operandos):
+    subtipo = instrucciones[instruccion][2]
+    codigo_operacion = instrucciones[instruccion][0]
+
     instruccion_binaria = "0" * 6
-    instruccion_binaria += dec_bin(int(operandos[0]))
-    instruccion_binaria += dec_bin(int(operandos[1]))
-    instruccion_binaria += dec_bin(int(operandos[2]))
-    instruccion_binaria += "0" * 5
-    instruccion_binaria += instrucciones_tipo_r[instruccion]
+
+    if subtipo == SUBTIPO_1:
+        instruccion_binaria += "0" * 5
+        instruccion_binaria += dec_bin(int(operandos[1]))
+        instruccion_binaria += dec_bin(int(operandos[0]))
+        instruccion_binaria += dec_bin(int(operandos[2]))
+    elif subtipo == SUBTIPO_2:
+        instruccion_binaria += dec_bin(int(operandos[2]))
+        instruccion_binaria += dec_bin(int(operandos[1]))
+        instruccion_binaria += dec_bin(int(operandos[0]))
+        instruccion_binaria += "0" * 5
+    elif subtipo == SUBTIPO_3:
+        instruccion_binaria += dec_bin(int(operandos[1]))
+        instruccion_binaria += dec_bin(int(operandos[2]))
+        instruccion_binaria += dec_bin(int(operandos[0]))
+        instruccion_binaria += "0" * 5
+
+    instruccion_binaria += codigo_operacion
 
     return instruccion_binaria
 
 
 def parse_i(instruccion, operandos):
-    if len(operandos) == 2:
+    subtipo = instrucciones[instruccion][2]
+    codigo_operacion = instrucciones[instruccion][0]
+
+    instruccion_binaria = codigo_operacion
+
+    if subtipo == SUBTIPO_1:
         # Quito los parentesis y lo pongo como un tercer argumento
         operandos[1] = operandos[1].replace("(", " ")
         operandos[1] = operandos[1].replace(")", "")
         operandos.append(operandos[1].split()[1])
         operandos[1] = operandos[1][0]
 
-    instruccion_binaria = instrucciones_tipo_i[instruccion]
-    instruccion_binaria += dec_bin(int(operandos[0]))
-    instruccion_binaria += dec_bin(int(operandos[1]))
-    instruccion_binaria += dec_bin(int(operandos[2]), digitos=16)
+        instruccion_binaria += dec_bin(int(operandos[2]))
+        instruccion_binaria += dec_bin(int(operandos[0]))
+        instruccion_binaria += dec_bin(int(operandos[1]), digitos=16)
+    elif subtipo == SUBTIPO_2 or subtipo == SUBTIPO_3:
+        instruccion_binaria += dec_bin(int(operandos[1]))
+        instruccion_binaria += dec_bin(int(operandos[0]))
+        instruccion_binaria += dec_bin(int(operandos[2]), digitos=16)
+    elif subtipo == SUBTIPO_4:
+        instruccion_binaria += "0" * 5
+        instruccion_binaria += dec_bin(int(operandos[0]))
+        instruccion_binaria += dec_bin(int(operandos[1]), digitos=16)
+    elif subtipo == SUBTIPO_5:
+        instruccion_binaria += dec_bin(int(operandos[0]))
+        instruccion_binaria += dec_bin(int(operandos[1]))
+        instruccion_binaria += dec_bin(int(operandos[2]), digitos=16)
+    elif subtipo == SUBTIPO_6:
+        instruccion_binaria += dec_bin(int(operandos[0]), digitos=26)
 
     return instruccion_binaria
 
 
 def parse_j(instruccion, operandos):
-    instruccion_binaria = ""
+    subtipo = instrucciones[instruccion][2]
+    codigo_operacion = instrucciones[instruccion][0]
+
+    instruccion_binaria = "0" * 6
+
+    if subtipo == SUBTIPO_1:
+        instruccion_binaria += dec_bin(int(operandos[0]))
+        instruccion_binaria += "0" * 15
+    elif subtipo == SUBTIPO_2:
+        instruccion_binaria += dec_bin(int(operandos[0]))
+        instruccion_binaria += "0" * 5
+
+        #Veo si hay mas de un operando (es decir, existe "rd")
+        if len(operandos) > 1:
+            instruccion_binaria += dec_bin(int(operandos[1]))
+        else:
+            instruccion_binaria += "0" * 5
 
     return instruccion_binaria
 
@@ -66,48 +116,58 @@ def parse_instruccion(linea):
     return instruccion, operandos
 
 
+TIPO_R = 0
+TIPO_I = 1
+TIPO_J = 2
+
+SUBTIPO_1 = 3
+SUBTIPO_2 = 4
+SUBTIPO_3 = 5
+SUBTIPO_4 = 6
+SUBTIPO_5 = 7
+SUBTIPO_6 = 8
+
 # Diccionarios
-instrucciones_tipo_r = {
-    "SLL": "000000",
-    "SRL": "000010",
-    "SRA": "000011",
-    "SRLV": "000110",
-    "SRAV": "000111",
-    "ADD": "100000",
-    "SLLV": "000100",
-    "SUB": "100010",
-    "AND": "100100",
-    "OR": "100101",
-    "XOR": "100110",
-    "NOR": "100111",
-    "SLT": "101010",
-}
+instrucciones = {
+    # Tipo R
+    "SLL":  ["000000", TIPO_R, SUBTIPO_1],
+    "SRL":  ["000010", TIPO_R, SUBTIPO_1],
+    "SRA":  ["000011", TIPO_R, SUBTIPO_1],
+    "SRLV": ["000110", TIPO_R, SUBTIPO_2],
+    "SRAV": ["000111", TIPO_R, SUBTIPO_2],
+    "ADD":  ["100000", TIPO_R, SUBTIPO_3],
+    "SLLV": ["000100", TIPO_R, SUBTIPO_2],
+    "SUB":  ["100010", TIPO_R, SUBTIPO_3],
+    "AND":  ["100100", TIPO_R, SUBTIPO_3],
+    "OR":   ["100101", TIPO_R, SUBTIPO_3],
+    "XOR":  ["100110", TIPO_R, SUBTIPO_3],
+    "NOR":  ["100111", TIPO_R, SUBTIPO_3],
+    "SLT":  ["101010", TIPO_R, SUBTIPO_3],
 
-instrucciones_tipo_i = {
-    "LB": "100000",
-    "LH": "100001",
-    "LW": "100011",
-    "LWU": "100111",
-    "LBU": "100100",
-    "LHU": "100101",
-    "SB": "101000",
-    "SH": "101001",
-    "SW": "101011",
-    "ADDI": "001000",
-    "ANDI": "001100",
-    "ORI": "001101",
-    "XORI": "001110",
-    "LUI": "001111",
-    "SLTI": "001010",
-    "BEQ": "000100",
-    "BNE": "000101",
-    "J": "000010",
-    "JAL": "000011",
-}
+    # Tipo I
+    "LB":   ["100000", TIPO_I, SUBTIPO_1],
+    "LH":   ["100001", TIPO_I, SUBTIPO_1],
+    "LW":   ["100011", TIPO_I, SUBTIPO_1],
+    "LWU":  ["100111", TIPO_I, SUBTIPO_1],
+    "LBU":  ["100100", TIPO_I, SUBTIPO_1],
+    "LHU":  ["100101", TIPO_I, SUBTIPO_1],
+    "SB":   ["101000", TIPO_I, SUBTIPO_1],
+    "SH":   ["101001", TIPO_I, SUBTIPO_1],
+    "SW":   ["101011", TIPO_I, SUBTIPO_1],
+    "ADDI": ["001000", TIPO_I, SUBTIPO_2],
+    "ANDI": ["001100", TIPO_I, SUBTIPO_2],
+    "ORI":  ["001101", TIPO_I, SUBTIPO_3],
+    "XORI": ["001110", TIPO_I, SUBTIPO_2],
+    "LUI":  ["001111", TIPO_I, SUBTIPO_4],
+    "SLTI": ["001010", TIPO_I, SUBTIPO_3],
+    "BEQ":  ["000100", TIPO_I, SUBTIPO_5],
+    "BNE":  ["000101", TIPO_I, SUBTIPO_5],
+    "J":    ["000010", TIPO_I, SUBTIPO_6],
+    "JAL":  ["000011", TIPO_I, SUBTIPO_6],
 
-instrucciones_tipo_j = {
-    "JR": "001000",
-    "JALR": "001001",
+    # Tipo J
+    "JR":   ["001000", TIPO_J, SUBTIPO_1],
+    "JALR": ["001001", TIPO_J, SUBTIPO_2],
 }
 
 
@@ -115,6 +175,8 @@ def main():
     # Logica
     test_file = open("assembler.txt", "r")
     assembler = test_file.readlines()
+
+    lista_instrucciones_hexa = []
 
     for linea in assembler:
         linea = linea.strip()
@@ -125,18 +187,21 @@ def main():
 
             print("ASM:", instruccion, ", ".join(operandos))
 
-            if instruccion in instrucciones_tipo_i.keys():
+            if instrucciones[instruccion][1] == TIPO_I:
                 instruccion_binaria = parse_i(instruccion, operandos)
-            elif instruccion in instrucciones_tipo_j.keys():
+            elif instrucciones[instruccion][1] == TIPO_J:
                 instruccion_binaria = parse_j(instruccion, operandos)
-            elif instruccion in instrucciones_tipo_r.keys():
+            elif  instrucciones[instruccion][1] == TIPO_R:
                 instruccion_binaria = parse_r(instruccion, operandos)
 
             print("BIN:", instruccion_binaria)
 
             instruccion_hexa = bin_hex(instruccion_binaria)
+
+            lista_instrucciones_hexa.append(instruccion_hexa)
             print("HEX:", instruccion_hexa)
             print()
 
+    print(lista_instrucciones_hexa)
 
 main()
