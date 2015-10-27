@@ -1,81 +1,122 @@
-import re
+# Funciones
+def dec_bin(numero, digitos):
+    binario = "{0:b}".format(numero)
+    longitud_actual = len(binario)
+    if longitud_actual < digitos:
+        binario = (digitos - longitud_actual) * "0" + binario
+    return binario
 
-#Funciones
-def dec_bin(numero):
-	binario = "{0:b}".format(numero)
-	long_actual = len(binario)
-	if(long_actual < 5):
-		binario = (5-long_actual)*"0" + binario
-	return binario
 
-def parse_r(line):
-	pass
+def bin_hex(numero):
+    hexa = hex(int(numero, 2))
+    hexa = hexa[2:]
+    return hexa
 
-def parse_i(line):
-	pass
 
-def parse_j(line):
-	pass
-#Diccionarios
+def parse_r(instruccion, operandos):
+    print("ASM:", instruccion, ", ".join(operandos))
+
+    instruccion_binaria = "0" * 6
+    instruccion_binaria += dec_bin(int(operandos[0]), digitos=5)
+    instruccion_binaria += dec_bin(int(operandos[1]), digitos=5)
+    instruccion_binaria += dec_bin(int(operandos[2]), digitos=5)
+    instruccion_binaria += "0" * 5
+    instruccion_binaria += instrucciones_tipo_r[instruccion]
+
+    print("BIN:", instruccion_binaria)
+
+    instruccion_hexa = bin_hex(instruccion_binaria)
+    print("HEX:", instruccion_hexa)
+
+    return instruccion_binaria
+
+
+def parse_i(instruccion, operandos):
+    pass
+
+
+def parse_j(instruccion, operandos):
+    pass
+
+
+def eliminar_comentarios(linea):
+    linea = linea.split(";")
+    instruccion = linea[0]
+    return instruccion
+
+
+def parse_instruccion(linea):
+    linea = linea.replace(",", "")
+    data = linea.split()
+    instruccion = data[0]
+    operandos = data[1:]
+    return instruccion, operandos
+
+
+# Diccionarios
 instrucciones_tipo_r = {
-	"SLL":	"000000",
-	"SRL":	"000010",
-	"SRA":	"000011",
-	"SRLV":	"000110",
-	"SRAV":	"000111",
-	"ADD":	"100000",
-	"SLLV": "000100",
-	"SUB":	"100010",
-	"AND":	"100100",
-	"OR":	"100101",
-	"XOR":	"100110",
-	"NOR":	"100111",
-	"SLT":	"101010",
+    "SLL": "000000",
+    "SRL": "000010",
+    "SRA": "000011",
+    "SRLV": "000110",
+    "SRAV": "000111",
+    "ADD": "100000",
+    "SLLV": "000100",
+    "SUB": "100010",
+    "AND": "100100",
+    "OR": "100101",
+    "XOR": "100110",
+    "NOR": "100111",
+    "SLT": "101010",
 }
 
 instrucciones_tipo_i = {
-	"LB":	"100000",
-	"LH":	"100001",
-	"LW":	"100011",
-	"LWU":	"100111",
-	"LBU":	"100100",
-	"LHU":	"100101",
-	"SB":	"101000",
-	"SH":	"101001",
-	"SW":	"101011",
-	"ADDI":	"001000",
-	"ANDI":	"001100",
-	"ORI":	"001101",
-	"XORI":	"001110",
-	"LUI":	"001111",
-	"SLTI":	"001010",
-	"BEQ":	"000100",
-	"BNE":	"000101",
-	"J":	"000010",
-	"JAL":	"000011",
+    "LB": "100000",
+    "LH": "100001",
+    "LW": "100011",
+    "LWU": "100111",
+    "LBU": "100100",
+    "LHU": "100101",
+    "SB": "101000",
+    "SH": "101001",
+    "SW": "101011",
+    "ADDI": "001000",
+    "ANDI": "001100",
+    "ORI": "001101",
+    "XORI": "001110",
+    "LUI": "001111",
+    "SLTI": "001010",
+    "BEQ": "000100",
+    "BNE": "000101",
+    "J": "000010",
+    "JAL": "000011",
 }
 
 instrucciones_tipo_j = {
-	"JR":	"001000",
-	"JALR":	"001001",
+    "JR": "001000",
+    "JALR": "001001",
 }
 
 
-#Logica
-test_file = open("assembler.txt", "r")
-assembler = test_file.readlines()
+def main():
+    # Logica
+    test_file = open("assembler.txt", "r")
+    assembler = test_file.readlines()
 
-for line in assembler:
-	line = line.strip()
+    for linea in assembler:
+        linea = linea.strip()
+        linea = eliminar_comentarios(linea)
 
-	line_data = filter(None, re.split(r' |,' , line))
-	instruction = line_data[0]
-	if(instruction in instrucciones_tipo_r.keys()):
-		parse_r(line_data)
-	elif(instruction in instrucciones_tipo_i.keys()):
-		parse_i(line_data)
-	elif(instruction in instrucciones_tipo_j.keys()):
-		parse_j(line_data)
-	else:
-		print("Instruccion no existe")
+        instruccion, operandos = parse_instruccion(linea)
 
+        if instruccion in instrucciones_tipo_i.keys():
+            parse_i(instruccion, operandos)
+        elif instruccion in instrucciones_tipo_j.keys():
+            parse_j(instruccion, operandos)
+        elif instruccion in instrucciones_tipo_r.keys():
+            parse_r(instruccion, operandos)
+
+        print()
+
+
+main()
