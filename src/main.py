@@ -1,5 +1,4 @@
-import re
-
+import time
 
 # Funciones
 def dec_bin(numero, digitos=5):
@@ -173,7 +172,7 @@ lista_instrucciones = {
 }
 
 
-def main():
+def parsear_instrucciones():
     # Logica
     test_file = open("assembler.txt", "r")
     assembler = test_file.readlines()
@@ -187,7 +186,7 @@ def main():
         if linea:
             instruccion, operandos = parse_instruccion(linea)
 
-            print("ASM:", instruccion, ", ".join(operandos))
+            #print("ASM:", instruccion, ", ".join(operandos))
 
             if lista_instrucciones[instruccion][1] == TIPO_I:
                 instruccion_binaria = parse_i(instruccion, operandos)
@@ -196,14 +195,45 @@ def main():
             elif lista_instrucciones[instruccion][1] == TIPO_R:
                 instruccion_binaria = parse_r(instruccion, operandos)
 
-            print("BIN:", instruccion_binaria)
+            #print("BIN:", instruccion_binaria)
 
             instruccion_hexa = bin_hex(instruccion_binaria)
 
             lista_instrucciones_hexa.append(instruccion_hexa)
-            print("HEX:", instruccion_hexa)
-            print()
+            #print("HEX:", instruccion_hexa)
+            #print()
 
-    print(lista_instrucciones_hexa)
+    #print(lista_instrucciones_hexa)
+    return lista_instrucciones_hexa
 
-main()
+def crear_coe(lista):
+    CABECERA = """*******************************************************************
+******  Archivo .COE para Arquitectura de Computadoras 2015  ******
+*******************************************************************
+;Archivo .COE generado automaticamente desde un archivo ASM.
+;Fecha de generación del archivo: """
+    CABECERA += time.ctime() + "\n"
+
+    MEMORY_INITIALIZATION_RADIX = "memory_initialization_radix"
+    MEMORY_INITIALIZATION_RADIX_VALUE = "16"
+
+    MEMORY_INITIALIZATION_VECTOR = "memory_initialization_vector"
+
+    texto_archivo = CABECERA
+    texto_archivo += MEMORY_INITIALIZATION_RADIX + "="
+    texto_archivo += MEMORY_INITIALIZATION_RADIX_VALUE + ";" + "\n"
+
+    texto_archivo += MEMORY_INITIALIZATION_VECTOR + "=" + "\n"
+
+    for item in lista:
+        texto_archivo += item + ",\n"
+
+    texto_archivo = texto_archivo[:-2] + ";"
+
+    return texto_archivo
+
+lista_hexa = parsear_instrucciones()
+texto_coe = crear_coe(lista_hexa)
+
+archivo = open("salida.coe", "w")
+archivo.write(texto_coe)

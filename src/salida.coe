@@ -1,0 +1,11 @@
+*******************************************************************
+******  Archivo .COE para Arquitectura de Computadoras 2015  ******
+*******************************************************************
+;Archivo .COE generado automaticamente desde un archivo ASM.
+;Fecha de generación del archivo: Tue Oct 27 16:07:26 2015
+memory_initialization_radix=16;
+memory_initialization_vector=
+8e810000,
+00421026,
+00221820,
+3843653c;
