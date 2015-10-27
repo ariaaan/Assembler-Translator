@@ -20,8 +20,8 @@ def bin_hex(numero, digitos=8):
 
 
 def parse_r(instruccion, operandos):
-    subtipo = instrucciones[instruccion][2]
-    codigo_operacion = instrucciones[instruccion][0]
+    subtipo = lista_instrucciones[instruccion][2]
+    codigo_operacion = lista_instrucciones[instruccion][0]
 
     instruccion_binaria = "0" * 6
 
@@ -47,8 +47,8 @@ def parse_r(instruccion, operandos):
 
 
 def parse_i(instruccion, operandos):
-    subtipo = instrucciones[instruccion][2]
-    codigo_operacion = instrucciones[instruccion][0]
+    subtipo = lista_instrucciones[instruccion][2]
+    codigo_operacion = lista_instrucciones[instruccion][0]
 
     instruccion_binaria = codigo_operacion
 
@@ -81,8 +81,8 @@ def parse_i(instruccion, operandos):
 
 
 def parse_j(instruccion, operandos):
-    subtipo = instrucciones[instruccion][2]
-    codigo_operacion = instrucciones[instruccion][0]
+    subtipo = lista_instrucciones[instruccion][2]
+    codigo_operacion = lista_instrucciones[instruccion][0]
 
     instruccion_binaria = "0" * 6
 
@@ -98,6 +98,8 @@ def parse_j(instruccion, operandos):
             instruccion_binaria += dec_bin(int(operandos[1]))
         else:
             instruccion_binaria += "0" * 5
+
+    instruccion_binaria += codigo_operacion
 
     return instruccion_binaria
 
@@ -128,7 +130,7 @@ SUBTIPO_5 = 7
 SUBTIPO_6 = 8
 
 # Diccionarios
-instrucciones = {
+lista_instrucciones = {
     # Tipo R
     "SLL":  ["000000", TIPO_R, SUBTIPO_1],
     "SRL":  ["000010", TIPO_R, SUBTIPO_1],
@@ -187,11 +189,11 @@ def main():
 
             print("ASM:", instruccion, ", ".join(operandos))
 
-            if instrucciones[instruccion][1] == TIPO_I:
+            if lista_instrucciones[instruccion][1] == TIPO_I:
                 instruccion_binaria = parse_i(instruccion, operandos)
-            elif instrucciones[instruccion][1] == TIPO_J:
+            elif lista_instrucciones[instruccion][1] == TIPO_J:
                 instruccion_binaria = parse_j(instruccion, operandos)
-            elif  instrucciones[instruccion][1] == TIPO_R:
+            elif lista_instrucciones[instruccion][1] == TIPO_R:
                 instruccion_binaria = parse_r(instruccion, operandos)
 
             print("BIN:", instruccion_binaria)
