@@ -1,5 +1,3 @@
-import time
-
 # Funciones
 def dec_bin(numero, digitos=5):
     binario = "{0:b}".format(numero)
@@ -207,20 +205,12 @@ def parsear_instrucciones():
     return lista_instrucciones_hexa
 
 def crear_coe(lista):
-    CABECERA = """*******************************************************************
-******  Archivo .COE para Arquitectura de Computadoras 2015  ******
-*******************************************************************
-;Archivo .COE generado automaticamente desde un archivo ASM.
-;Fecha de generación del archivo: """
-    CABECERA += time.ctime() + "\n"
-
     MEMORY_INITIALIZATION_RADIX = "memory_initialization_radix"
     MEMORY_INITIALIZATION_RADIX_VALUE = "16"
 
     MEMORY_INITIALIZATION_VECTOR = "memory_initialization_vector"
 
-    texto_archivo = CABECERA
-    texto_archivo += MEMORY_INITIALIZATION_RADIX + "="
+    texto_archivo = MEMORY_INITIALIZATION_RADIX + "="
     texto_archivo += MEMORY_INITIALIZATION_RADIX_VALUE + ";" + "\n"
 
     texto_archivo += MEMORY_INITIALIZATION_VECTOR + "=" + "\n"
