@@ -184,7 +184,7 @@ def parsear_instrucciones():
         if linea:
             instruccion, operandos = parse_instruccion(linea)
 
-            #print("ASM:", instruccion, ", ".join(operandos))
+            # print("ASM:", instruccion, ", ".join(operandos))
 
             if lista_instrucciones[instruccion][1] == TIPO_I:
                 instruccion_binaria = parse_i(instruccion, operandos)
@@ -193,12 +193,12 @@ def parsear_instrucciones():
             elif lista_instrucciones[instruccion][1] == TIPO_R:
                 instruccion_binaria = parse_r(instruccion, operandos)
 
-            #print("BIN:", instruccion_binaria)
+            # print("BIN:", instruccion_binaria)
 
             instruccion_hexa = bin_hex(instruccion_binaria)
 
             lista_instrucciones_hexa.append(instruccion_hexa)
-            #print("HEX:", instruccion_hexa)
+            # print("HEX:", instruccion_hexa)
             # print()
 
     # print(lista_instrucciones_hexa)
