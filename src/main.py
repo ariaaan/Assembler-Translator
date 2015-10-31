@@ -90,7 +90,7 @@ def parse_j(instruccion, operandos):
         instruccion_binaria += dec_bin(int(operandos[0]))
         instruccion_binaria += "0" * 5
 
-        #Veo si hay mas de un operando (es decir, existe "rd")
+        # Veo si hay mas de un operando (es decir, existe "rd")
         if len(operandos) > 1:
             instruccion_binaria += dec_bin(int(operandos[1]))
         else:
@@ -199,10 +199,11 @@ def parsear_instrucciones():
 
             lista_instrucciones_hexa.append(instruccion_hexa)
             #print("HEX:", instruccion_hexa)
-            #print()
+            # print()
 
-    #print(lista_instrucciones_hexa)
+    # print(lista_instrucciones_hexa)
     return lista_instrucciones_hexa
+
 
 def crear_coe(lista):
     MEMORY_INITIALIZATION_RADIX = "memory_initialization_radix"
