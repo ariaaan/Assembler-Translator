@@ -202,4 +202,4 @@ class AssemblerParser:
 
 # Main
 parser = AssemblerParser()
-parser.parsear_assembler("assembler.txt", "whatever.coe")
+parser.parsear_assembler("files/assembler.txt", "files/salida.coe")
